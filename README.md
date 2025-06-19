@@ -3,7 +3,7 @@
 
 configuration.yaml in HomeAssistant
 
-# ESP8266 HA-Water-Meter
+ESP8266 HA-Water-Meter
 utility_meter:
   util_water_usage_hourly:
     source: sensor.flow_total_water_consumption
