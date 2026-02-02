@@ -35,7 +35,7 @@ wifi:
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
     ssid: "Ha-Water-Meter Fallback Hotspot"
-    password: "xxxxxxxx"
+    password: "xxx"
 
 captive_portal:
 
