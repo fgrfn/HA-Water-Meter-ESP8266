@@ -39,6 +39,12 @@ wifi:
 
 captive_portal:
 
+binary_sensor:
+  - platform: status
+    name: '${friendly_name} - Device Online'
+    id: device_online
+    device_class: connectivity
+
 substitutions:
   friendly_name: Flow
   device_description: "Measure your water consumption with a dumb water meter"
