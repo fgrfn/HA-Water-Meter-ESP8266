@@ -68,11 +68,13 @@ sensor:
   - platform: pulse_meter
     name: '${friendly_name} - Flow Rate'
     id: sensor_water_pulse_meter
-    # device_class: water    ← entfernen!
+    device_class: volume_flow_rate
     state_class: measurement
-    unit_of_measurement: 'L/min'   # kurz und etabliert
+    unit_of_measurement: 'L/min'
     icon: mdi:water-outline
     accuracy_decimals: 0
+    timeout: 10s
+    internal_filter: 50ms
     pin: ${pulse_pin}
 
     total:
