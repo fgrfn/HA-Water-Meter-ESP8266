@@ -8,8 +8,6 @@ esp8266:
 # Enable logging
 logger:
 
-debug:
-
 # Enable Home Assistant API
 api:
   encryption:
@@ -58,10 +56,6 @@ text_sensor:
   - platform: version
     hide_timestamp: true
     name: '${friendly_name} - ESPHome Version'
-  - platform: debug
-    reset_reason:
-      name: '${friendly_name} - Reset Reason'
-      icon: mdi:restart-alert
   - platform: wifi_info
     ip_address:
       name: '${friendly_name} - IP Address'
