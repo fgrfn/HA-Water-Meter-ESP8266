@@ -8,6 +8,8 @@ esp8266:
 # Enable logging
 logger:
 
+debug:
+
 # Enable Home Assistant API
 api:
   encryption:
@@ -20,6 +22,7 @@ ota:
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
+  min_auth_mode: WPA2
  #use_address: 10.10.40.102
  # manual_ip:
     # Set this to the IP of the ESP
@@ -35,7 +38,7 @@ wifi:
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
     ssid: "Ha-Water-Meter Fallback Hotspot"
-    password: "xxx"
+    password: "123456789"
 
 captive_portal:
 
