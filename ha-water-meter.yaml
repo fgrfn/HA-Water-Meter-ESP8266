@@ -55,6 +55,10 @@ text_sensor:
   - platform: version
     hide_timestamp: true
     name: '${friendly_name} - ESPHome Version'
+  - platform: debug
+    reset_reason:
+      name: '${friendly_name} - Reset Reason'
+      icon: mdi:restart-alert
   - platform: wifi_info
     ip_address:
       name: '${friendly_name} - IP Address'
@@ -65,6 +69,12 @@ text_sensor:
 
 #WiFi signal sensor for troubleshooting and positioning
 sensor:
+  # Device uptime for diagnostics and availability heartbeat in Home Assistant
+  - platform: uptime
+    name: '${friendly_name} - Uptime'
+    id: sensor_uptime
+    update_interval: 60s
+
   # WiFi signal
   - platform: wifi_signal
     name: "${friendly_name} - WiFi Signal"
@@ -93,3 +103,9 @@ sensor:
       accuracy_decimals: 3
       filters:
         - multiply: 0.001
+
+button:
+  - platform: restart
+    name: '${friendly_name} - Restart Device'
+    id: button_restart_device
+    entity_category: config

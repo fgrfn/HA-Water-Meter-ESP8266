@@ -22,17 +22,24 @@ Der Sensor `binary_sensor.flow_device_online` (Name je nach Friendly Name) wird 
 
 ### 2) Last Seen (optional)
 
-Falls du in HA eine „zuletzt gesehen“-Entität möchtest, kannst du einen Template-Sensor anlegen:
+Die Variante über `last_changed` vom Verbrauchssensor ist bei Nullverbrauch unzuverlässig.
+Robuster ist ein trigger-basierter Last-Seen-Sensor, der auf Online-Status **oder** einen Heartbeat (z. B. Uptime) reagiert:
 
 ```yaml
 template:
-  - sensor:
+  - trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.flow_device_online
+          - sensor.flow_uptime
+    sensor:
       - name: "Water Meter Last Seen"
         unique_id: water_meter_last_seen
         device_class: timestamp
-        state: >
-          {{ states.sensor.flow_total_water_consumption.last_changed.isoformat() }}
+        state: "{{ now().isoformat() }}"
 ```
+
+Damit aktualisiert sich „Last Seen" auch dann regelmäßig, wenn gerade kein Wasser fließt.
 
 ---
 
@@ -101,6 +108,11 @@ template:
 ---
 
 ## Troubleshooting (typische Fälle)
+
+Für Diagnose sind in der ESPHome-Konfiguration zusätzliche Entitäten sinnvoll:
+- `sensor.flow_uptime`
+- `text_sensor.flow_reset_reason`
+- `button.flow_restart_device`
 
 ### 1) Flow-Wert kommt verzögert (z. B. erst nach 20–30s)
 Das ist bei kleinen Durchflüssen normal, weil erst Pulse eintreffen müssen.
