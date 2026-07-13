@@ -1,4 +1,4 @@
-name: Create Release
+name: Validate & Release
 
 on:
   push:
@@ -6,61 +6,75 @@ on:
       - main
     paths:
       - 'ha-water-meter.yaml'
+  pull_request:
+    paths:
+      - 'ha-water-meter.yaml'
 
 jobs:
+  validate:
+    name: Validate ESPHome config
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install ESPHome
+        run: pip install esphome
+
+      - name: Create dummy secrets
+        run: |
+          cat > secrets.yaml <<'EOF'
+          wifi_ssid: "ci-dummy-ssid"
+          wifi_password: "ci-dummy-password"
+          api_encryption_key: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+          ota_password: "ci-dummy-ota-password"
+          ap_password: "ci-dummy-ap-pass"
+          EOF
+
+      - name: Validate configuration
+        run: esphome config ha-water-meter.yaml
+
   release:
+    name: Create Release
+    if: github.event_name == 'push'
+    needs: validate
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
-      - name: Get latest tag
-        id: get_latest_tag
-        run: |
-          # Hole das neueste Tag, falls vorhanden
-          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-          echo "latest_tag=$LATEST_TAG" >> $GITHUB_OUTPUT
-          echo "Latest tag: $LATEST_TAG"
-      
+
       - name: Calculate new version
         id: calc_version
         run: |
-          LATEST_TAG="${{ steps.get_latest_tag.outputs.latest_tag }}"
-          
-          # Entferne das 'v' Präfix falls vorhanden
+          # Hole das neueste Tag, falls vorhanden
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "Latest tag: $LATEST_TAG"
+
+          # Entferne das 'v' Präfix und teile in Major/Minor/Patch
           VERSION=${LATEST_TAG#v}
-          
-          # Teile die Version in Major, Minor, Patch
-          IFS='.' read -r -a VERSION_PARTS <<< "$VERSION"
-          MAJOR="${VERSION_PARTS[0]}"
-          MINOR="${VERSION_PARTS[1]}"
-          PATCH="${VERSION_PARTS[2]}"
-          
-          # Erhöhe Patch-Version
-          PATCH=$((PATCH + 1))
-          
-          NEW_VERSION="v${MAJOR}.${MINOR}.${PATCH}"
-          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+          MAJOR=${MAJOR:-0}
+          MINOR=${MINOR:-0}
+          PATCH=${PATCH:-0}
+
+          NEW_VERSION="v${MAJOR}.${MINOR}.$((PATCH + 1))"
+          echo "new_version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
           echo "New version: $NEW_VERSION"
-      
+
       - name: Create Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.calc_version.outputs.new_version }}
-          release_name: Release ${{ steps.calc_version.outputs.new_version }}
-          body: |
-            ## Änderungen
-            
-            Automatisches Release aufgrund von Änderungen an ha-water-meter.yaml
-            
-            ### Dateien
-            - ha-water-meter.yaml
-          draft: false
-          prerelease: false
+          name: Release ${{ steps.calc_version.outputs.new_version }}
+          generate_release_notes: true
+          files: ha-water-meter.yaml
