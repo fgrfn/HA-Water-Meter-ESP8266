@@ -4,8 +4,10 @@ on:
   push:
     branches:
       - main
+      - 'nightly/**'
     paths:
       - 'ha-water-meter.yaml'
+      - '.github/workflows/release.yml'
   pull_request:
     paths:
       - 'ha-water-meter.yaml'
@@ -31,17 +33,19 @@ jobs:
           cat > secrets.yaml <<'EOF'
           wifi_ssid: "ci-dummy-ssid"
           wifi_password: "ci-dummy-password"
-          api_encryption_key: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+          api_encryption_key: "AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA="
           ota_password: "ci-dummy-ota-password"
           ap_password: "ci-dummy-ap-pass"
           EOF
 
-      - name: Validate configuration
-        run: esphome config ha-water-meter.yaml
+      - name: Validate and compile firmware
+        run: |
+          esphome config ha-water-meter.yaml
+          esphome compile ha-water-meter.yaml
 
   release:
     name: Create Release
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: validate
     runs-on: ubuntu-latest
     permissions:
