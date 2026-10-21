@@ -22,8 +22,10 @@ Der ESP8266 wird mit ESPHome geflasht und ist über WLAN direkt in Home Assistan
 - **Zähler:** „dummer" Wasserzähler mit Impulsausgang (z. B. Reed-Kontakt), **1 Puls = 1 Liter**
 - **Verdrahtung:** Impulsausgang zwischen `GPIO12` und `GND`
 
-Liefert dein Zähler einen anderen Impulswert (z. B. 1 Puls = 10 L), passe den
-`multiply`-Filter am Total-Sensor an (`0.001` = 1 L/Puls → m³).
+Liefert dein Zähler einen anderen Impulswert, passe die Substitution
+`liters_per_pulse` an (z. B. `"10.0"` für 1 Puls = 10 Liter). Der Wert muss
+größer als null sein und wird gemeinsam für Durchfluss, Gesamtverbrauch und
+den Abgleich des Zählerstands verwendet.
 Falls kein externer Pull-up-Widerstand verbaut ist, aktiviere im YAML den
 internen Pull-up (`mode: INPUT_PULLUP`, im YAML als Kommentar vorbereitet).
 
