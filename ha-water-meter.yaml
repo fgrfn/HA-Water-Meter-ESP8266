@@ -2,6 +2,8 @@ substitutions:
   friendly_name: Flow
   device_description: "Measure your water consumption with a dumb water meter"
   pulse_pin: GPIO12
+  # Volume represented by one meter pulse. Must be greater than zero.
+  liters_per_pulse: "1.0"
 
 esphome:
   name: ha-water-meter
@@ -123,6 +125,8 @@ sensor:
     unit_of_measurement: 'L/min'
     icon: mdi:water-outline
     accuracy_decimals: 0
+    filters:
+      - multiply: ${liters_per_pulse}
     timeout: 10s
     internal_filter: 50ms
     pin:
@@ -140,6 +144,7 @@ sensor:
       icon: mdi:water-outline
       accuracy_decimals: 3
       filters:
+        - multiply: ${liters_per_pulse}
         - multiply: 0.001
       on_raw_value:
         # Mirror the pulse count into the persisted global
@@ -166,7 +171,7 @@ number:
       then:
         - pulse_meter.set_total_pulses:
             id: sensor_water_pulse_meter
-            value: !lambda 'return static_cast<uint32_t>(roundf(x * 1000.0f));'
+            value: !lambda 'return static_cast<uint32_t>(roundf(x * 1000.0f / ${liters_per_pulse}));'
 
 button:
   - platform: restart
