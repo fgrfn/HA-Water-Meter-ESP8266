@@ -79,7 +79,9 @@ höchstens die letzten ~5 Minuten Verbrauch verloren gehen.
 Über die Entität **„Set Meter Reading"** (m³) lässt sich der Zählerstand
 jederzeit ans physische Zählwerk angleichen — z. B. nach dem ersten Flashen
 oder nach einem Zählertausch. Einfach den aktuellen Stand des Wasserzählers
-eintragen, der Total-Sensor springt sofort auf diesen Wert.
+eintragen, der Total-Sensor springt sofort auf diesen Wert. Die Entität zeigt
+anschließend wieder den tatsächlich gemessenen Gesamtstand an, statt den
+zuletzt eingegebenen Korrekturwert dauerhaft beizubehalten.
 
 ---
 
