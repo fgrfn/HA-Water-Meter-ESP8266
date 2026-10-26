@@ -26,7 +26,7 @@ jobs:
           python-version: '3.12'
 
       - name: Install ESPHome
-        run: pip install esphome
+        run: pip install "esphome==2026.10.0"
 
       - name: Create dummy secrets
         run: |

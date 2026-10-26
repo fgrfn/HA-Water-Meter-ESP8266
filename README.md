@@ -228,9 +228,11 @@ warum das Gerät neu gestartet ist.
 ## CI & Releases
 
 Bei jedem Push/PR, der `ha-water-meter.yaml` ändert, validiert eine GitHub
-Action die Konfiguration mit `esphome config` (gegen Dummy-Secrets). Nach
-einem Merge auf `main` wird automatisch ein Release mit angehängter YAML
-erstellt.
+Action die Konfiguration und kompiliert die Firmware mit der festgelegten
+ESPHome-Version 2026.10.0 (gegen Dummy-Secrets). Das hält lokale Fehler und
+spätere Releases reproduzierbar; Versionswechsel erfolgen bewusst als eigene
+Änderung. Nach einem Merge auf `main` wird automatisch ein Release mit
+angehängter YAML erstellt.
 
 ---
 
