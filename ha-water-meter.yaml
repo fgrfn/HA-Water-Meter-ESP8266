@@ -14,6 +14,10 @@ esphome:
     # persisted total survives reboots and power outages.
     priority: 250
     then:
+      - lambda: |-
+          constexpr float pulse_volume_liters = ${liters_per_pulse};
+          static_assert(pulse_volume_liters > 0.0f,
+                        "liters_per_pulse must be greater than zero");
       - pulse_meter.set_total_pulses:
           id: sensor_water_pulse_meter
           value: !lambda 'return id(g_total_pulses);'
